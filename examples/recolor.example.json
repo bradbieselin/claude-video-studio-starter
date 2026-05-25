@@ -1,0 +1,27 @@
+{
+  "_comment_1": "Example mapping for brand_recolor.py — show how to migrate from a multi-color palette to a single-accent brand.",
+  "_comment_2": "Edit the values below to match YOUR target palette, then run: python helpers/brand_recolor.py --html composition/index.html --map examples/recolor.example.json",
+  "_comment_3": "The tool does literal find-and-replace, no regex. Order matters slightly — put longer/more-specific strings first.",
+
+  "#FFD60A": "#c6ff3d",
+  "#ffd60a": "#c6ff3d",
+  "#ffe44d": "#d8ff60",
+  "#f5b800": "#97c500",
+  "rgba(255, 214, 10, 0.45)": "rgba(198, 255, 61, 0.55)",
+  "rgba(255, 214, 10, 0.6)": "rgba(198, 255, 61, 0.6)",
+
+  "#3fb3ff": "#c6ff3d",
+  "#3FB3FF": "#c6ff3d",
+  "rgba(63, 179, 255, 0.55)": "rgba(198, 255, 61, 0.6)",
+  "rgba(63, 179, 255, 0.6)": "rgba(198, 255, 61, 0.65)",
+
+  "#2a8bff": "#c6ff3d",
+  "rgba(42, 139, 255, 0.65)": "rgba(198, 255, 61, 0.7)",
+  "rgba(42, 139, 255, 0.18)": "rgba(198, 255, 61, 0.2)",
+
+  "#ff3a3a": "#ff4d2e",
+  "rgba(255, 58, 58, 0.6)": "rgba(255, 77, 46, 0.6)",
+
+  "#00ff66": "#c6ff3d",
+  "rgba(0, 255, 102, 0.45)": "rgba(198, 255, 61, 0.5)"
+}

@@ -54,12 +54,12 @@ edit this video at source.mp4
 That's it. Claude will:
 
 1. **ffprobe** the source — confirms dimensions, fps, duration.
-2. **Transcribe** with ElevenLabs Scribe (or your chosen provider). Cached.
+2. **Transcribe** with `transcribe.py` (calls ElevenLabs Scribe). Cached — won't re-transcribe on subsequent runs.
 3. **Cut silences** > 0.2s using `cut_silences.py`. Audio fades, denoise, audio cleanup all baked in.
-4. **Generate captions** from the tight transcript.
+4. **Generate captions** from the tight transcript using `generate_captions.py`.
 5. **Build the composition** by editing `composition/index.html` — hook, captions, motion graphics, SFX.
-6. **Lint + inspect** the composition.
-7. **Render** the final MP4.
+6. **Lint + inspect** the composition (`npx hyperframes lint`, `npx hyperframes inspect`).
+7. **Render** the final MP4 (`npx hyperframes render . -o edit/final.mp4 --quality high --fps 30 --crf 16`).
 
 Total active time on your end: **answering 2-3 clarifying questions** if Claude has them. Otherwise it just executes.
 

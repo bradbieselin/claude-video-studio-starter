@@ -40,21 +40,22 @@ Claude does the labor (transcribing, cutting silences, building captions, timing
 git clone https://github.com/bradbieselin/claude-video-studio-starter.git
 cd claude-video-studio-starter
 
-# 2. Install the helper script dependencies
+# 2. Install Python dependencies
 pip install requests python-dotenv
 
 # 3. Copy memory templates into your Claude Code project folder
 #    See INSTALL.md for the exact path on your OS
 
 # 4. Customize your brand
-#    Open memory-templates/brand_voice_palette.md and replace every {{PLACEHOLDER}}
-#    with your own colors, font, voice, social handles, and CTA links
+#    Open memory-templates/brand_voice_palette.md and fill in every {{PLACEHOLDER}}
 
-# 5. Set up a transcription provider
-#    Get an API key from elevenlabs.io / groq.com / openai.com
-#    Put it in .env at the project root: ELEVENLABS_API_KEY=...
+# 5. Get an ElevenLabs API key (free tier works) and put it in .env:
+#    ELEVENLABS_API_KEY=sk_xxx
 
-# 6. Drop your first raw video into a new project folder and tell Claude:
+# 6. Pre-synthesize the SFX library (one time):
+python helpers/synth_sfx.py --out templates/composition/assets/sfx/
+
+# 7. Drop your first raw video into a new project folder, then tell Claude:
 #    "edit this video"
 ```
 
@@ -79,8 +80,10 @@ claude-video-studio-starter/
 │   └── feedback_short_form_style.md      ← short-form aesthetic rules
 │
 ├── helpers/                      ← Python helpers — argv-parameterized, copy into each project's edit/
+│   ├── transcribe.py             ← extract audio → ElevenLabs Scribe → cached word-level JSON
 │   ├── cut_silences.py           ← detect gaps >0.2s, ffmpeg-cut, fade splices, denoise, clean audio
 │   ├── generate_captions.py      ← Scribe JSON → phrase-level HTML caption clips
+│   ├── synth_sfx.py              ← synthesize the 5-cue SFX library from ffmpeg lavfi (no external assets)
 │   └── brand_recolor.py          ← batch hex/rgba migration in composition HTML
 │
 ├── templates/
@@ -90,7 +93,8 @@ claude-video-studio-starter/
 │           └── sfx/              ← drop ffmpeg-synthesized SFX here (recipes in playbook)
 │
 └── examples/
-    └── first-video-walkthrough.md ← end-to-end first render
+    ├── first-video-walkthrough.md ← end-to-end first render
+    └── recolor.example.json       ← example mapping for brand_recolor.py
 ```
 
 ---
@@ -109,16 +113,17 @@ claude-video-studio-starter/
 
 ## What's NOT in here (for a reason)
 
-This is the **bones**. The starter that gets you a clean working pipeline.
+This is the **bones**. The starter gives you a working pipeline that produces a clean short-form video with captions, silence cuts, brand-tinted hook, zoom motion, SFX, and CTA. Enough to ship.
 
-What's not in here:
+**Intentionally NOT included** — these are the polish recipes that distinguish a good edit from a great one:
 
-- 🎨 *My specific brand palette and aesthetic presets* — yours will be different
-- 🎬 *The advanced motion graphics templates* — matrix glitches, node graphs, niche-tag systems, etc.
-- 🧠 *My prompt library* for different video shapes (countdown, hook+payoff, tutorial, listicle, etc.)
-- 🎙️ *The week-over-week tuning* I do on my own playbook
+- 🎬 **Advanced motion graphics templates** — niche-tag countdown rows, BIG "#1" reveals with rotated ribbons, matrix RGB-glitch overlays, animated workflow node graphs, AI mock UIs (ChatGPT, Higgsfield, Pinterest panels)
+- 🧠 **Prompt library** for different video shapes (countdown, hook+payoff, tutorial, listicle, sales reveal, etc.)
+- 🎙️ **Week-over-week tuning** of the playbook — what's working, what's flopping, the timing tweaks
+- 🎨 **Brand-locking workshop** — how to fill in `brand_voice_palette.md` for *your* brand in a way that produces consistent results
+- 🆘 **Setup support** when your first render breaks at 11pm
 
-If you want those — and you want help when your first render breaks at 11pm — join the community at **[Brad Builds AI on Skool](https://www.skool.com/brad-builds-ai-9842/about)**. First week is free.
+All of that lives in **[Brad Builds AI on Skool](https://www.skool.com/brad-builds-ai-9842/about)**. First week is free.
 
 ---
 

@@ -129,7 +129,7 @@ ELEVENLABS_API_KEY=sk_xxx_your_key_here
 ## Step 6 — Clone this starter kit
 
 ```bash
-git clone https://github.com/<your-fork>/claude-video-studio-starter.git
+git clone https://github.com/bradbieselin/claude-video-studio-starter.git
 cd claude-video-studio-starter
 ```
 

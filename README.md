@@ -37,7 +37,7 @@ Claude does the labor (transcribing, cutting silences, building captions, timing
 
 ```bash
 # 1. Clone this repo
-git clone https://github.com/<your-fork>/claude-video-studio-starter.git
+git clone https://github.com/bradbieselin/claude-video-studio-starter.git
 cd claude-video-studio-starter
 
 # 2. Install the helper script dependencies

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /* ====================================================
+         Brand tokens — replace with your own values from brand_voice_palette.md
+         ==================================================== */
+      :root {
+        --bg-base: #0a0a0a;
+        --bg-surf: #131313;
+        --text: #f3f1ea;
+        --accent: {{YOUR_ACCENT_HEX}};         /* e.g. #c6ff3d — your single brand accent */
+        --warn: {{YOUR_WARN_HEX}};             /* e.g. #ff4d2e — used sparingly */
+        --line: #262626;
+        --muted: #6f6f66;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg-base);
+        font-family: "Inter", sans-serif;
+        color: var(--text);
+      }
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* Base footage wrapper carries the zoom transform.
+         The inner <video> handles HyperFrames timing.
+         Per HF rule: never animate the video element directly; animate a non-timed wrapper. */
+      .base-wrap {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        will-change: transform;
+        transform-origin: 50% 38%;
+      }
+      .base-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* ====================================================
+         Hook 3-line caption block — fires during first ~3s
+         ==================================================== */
+      .hook-block {
+        position: absolute;
+        left: 0; right: 0;
+        top: 50%;
+        transform: translateY(-6%);
+        text-align: center;
+        z-index: 60;
+        font-family: "Inter", sans-serif;
+        font-weight: 900;
+        line-height: 1.02;
+        letter-spacing: -0.015em;
+        pointer-events: none;
+      }
+      .hook-line { display: block; text-transform: uppercase; }
+      .hook-line-1, .hook-line-3 {
+        color: var(--text);
+        font-size: 104px;
+        -webkit-text-stroke: 4px #000;
+        paint-order: stroke fill;
+        text-shadow: 0 6px 18px rgba(0, 0, 0, 0.75);
+      }
+      .hook-line-2 {
+        color: var(--accent);
+        font-size: 124px;
+        font-weight: 900;
+        -webkit-text-stroke: 5px #000;
+        paint-order: stroke fill;
+        text-shadow:
+          0 0 36px rgba(0, 0, 0, 0.4),
+          0 6px 20px rgba(0, 0, 0, 0.85);
+      }
+
+      /* ====================================================
+         Running word captions — paste output from generate_captions.py
+         ==================================================== */
+      .running-caption {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        top: 58%;
+        text-align: center;
+        z-index: 45;
+        font-family: "Inter", sans-serif;
+        font-weight: 800;
+        font-style: italic;
+        font-size: 84px;
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+        color: var(--text);
+        -webkit-text-stroke: 4px #000;
+        paint-order: stroke fill;
+        text-shadow:
+          0 4px 10px rgba(0, 0, 0, 0.85),
+          0 0 18px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+
+      /* ====================================================
+         CTA section — black canvas + accent keyword + subtitle
+         ==================================================== */
+      .cta-canvas {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 40%, #050810 0%, var(--bg-base) 75%);
+        z-index: 72;
+        pointer-events: none;
+        will-change: opacity;
+      }
+      .cta-block {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 40%;
+        text-align: center;
+        z-index: 78;
+        font-family: "Inter", sans-serif;
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+      .cta-prompt {
+        display: inline-block;
+        font-size: 76px;
+        font-weight: 700;
+        font-style: italic;
+        color: var(--text);
+        letter-spacing: -0.015em;
+        text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
+      }
+      .cta-keyword {
+        display: inline-block;
+        margin-left: 12px;
+        font-size: 96px;
+        font-weight: 900;
+        color: var(--accent);
+        text-transform: uppercase;
+        text-shadow:
+          0 0 30px rgba(0, 0, 0, 0.4),
+          0 4px 18px rgba(0, 0, 0, 0.8);
+      }
+      .cta-quote {
+        display: inline-block;
+        color: var(--accent);
+        font-weight: 900;
+        font-size: 96px;
+      }
+      .cta-subtitle {
+        display: block;
+        margin-top: 18px;
+        font-size: 44px;
+        font-weight: 600;
+        font-style: italic;
+        color: var(--muted);
+        letter-spacing: -0.01em;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="{{TIGHT_DURATION}}"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- ===== Base footage (zoom-controlled via .base-wrap) ===== -->
+      <div class="base-wrap" id="base-wrap">
+        <video
+          id="base-video"
+          class="clip base-video"
+          data-start="0"
+          data-duration="{{TIGHT_DURATION}}"
+          data-track-index="0"
+          src="assets/source_tight.mp4"
+          muted
+          playsinline
+        ></video>
+      </div>
+
+      <!-- ===== Source audio ===== -->
+      <audio
+        id="base-audio"
+        class="clip"
+        data-start="0"
+        data-duration="{{TIGHT_DURATION}}"
+        data-track-index="2"
+        data-volume="1"
+        src="assets/source_tight.mp4"
+      ></audio>
+
+      <!-- ===== SFX layer — mount your .mp3s on tracks 100+, one per element, each with a unique id ===== -->
+      <!-- Example:
+      <audio id="sfx-hook" class="clip" data-start="0.10" data-duration="0.45"
+             data-track-index="100" data-volume="0.85" src="assets/sfx/hit-low.mp3"></audio>
+      -->
+
+      <!-- ===== Hook 3-line caption — adapt copy to your video ===== -->
+      <div
+        id="hook"
+        class="clip hook-block"
+        data-start="0.10"
+        data-duration="3.40"
+        data-track-index="4"
+      >
+        <span class="hook-line hook-line-1">{{HOOK_LINE_1}}</span>
+        <span class="hook-line hook-line-2">{{HOOK_LINE_2_LIME}}</span>
+        <span class="hook-line hook-line-3">{{HOOK_LINE_3}}</span>
+      </div>
+
+      <!-- ===== Running word captions — PASTE captions_generated.html output here ===== -->
+      <!-- After running generate_captions.py, copy the <div id="cap-XXX"> lines into this block. -->
+
+      <!-- ===== CTA section ===== -->
+      <div
+        id="cta-canvas"
+        class="clip cta-canvas"
+        data-start="{{CTA_START}}"
+        data-duration="{{CTA_DURATION}}"
+        data-track-index="72"
+      ></div>
+      <div
+        id="cta"
+        class="clip cta-block"
+        data-start="{{CTA_START}}"
+        data-duration="{{CTA_DURATION}}"
+        data-track-index="80"
+      >
+        <div>
+          <span class="cta-prompt">comment</span>
+          <span class="cta-quote">"</span><span class="cta-keyword">{{CTA_KEYWORD}}</span><span class="cta-quote">"</span>
+        </div>
+        <span class="cta-subtitle">{{CTA_SUBTITLE}}</span>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ===== Base zoom motion — push 1.06-1.10× on emphasis beats, vary across cut =====
+      const baseSel = "#base-wrap";
+      gsap.set(baseSel, { scale: 1.0, transformOrigin: "50% 38%" });
+      tl.to(baseSel, { scale: 1.07, duration: 1.4, ease: "power2.out" }, 0.25);
+      tl.to(baseSel, { scale: 1.02, duration: 3.0, ease: "sine.inOut" }, 3.5);
+      // Add more keyframes here on emphasis beats throughout the timeline...
+      tl.to(baseSel, { scale: 1.0, duration: 0.7, ease: "power2.inOut" }, /* CTA start */ -1);
+
+      // ===== Hook 3-line staggered entrance =====
+      tl.from(".hook-line-1", { y: 24, opacity: 0, duration: 0.28, ease: "power3.out" }, 0.10);
+      tl.from(".hook-line-2", { y: 32, scale: 0.88, opacity: 0, duration: 0.34, ease: "back.out(2.4)" }, 0.26);
+      tl.from(".hook-line-3", { y: 24, opacity: 0, duration: 0.28, ease: "power3.out" }, 0.44);
+
+      // ===== Running captions — pop entrance per phrase =====
+      const captions = Array.from(document.querySelectorAll(".running-caption"));
+      captions.forEach((el) => {
+        const start = parseFloat(el.dataset.start);
+        const dur = parseFloat(el.dataset.duration);
+        const popDur = Math.min(0.18, dur * 0.4);
+        tl.from("#" + el.id,
+          { y: 18, scale: 0.92, opacity: 0, duration: popDur, ease: "back.out(2.6)" },
+          start);
+      });
+
+      // ===== CTA — black canvas fade =====
+      // (Add edge draw-ins, keyword pulse, etc. — see the playbook §5 for the full CTA pattern.)
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

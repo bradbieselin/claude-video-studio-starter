@@ -1,0 +1,47 @@
+# Source media — never commit raw recordings or rendered output
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.wav
+*.mp3
+*.aac
+
+# But DO commit the SFX library if you ship one
+!templates/composition/assets/sfx/*.mp3
+
+# Transcripts (contain raw API output, sometimes API keys in headers)
+transcripts/
+*.tight.json
+
+# Environment / secrets
+.env
+.env.local
+*.key
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Node
+node_modules/
+package-lock.json
+bun.lockb
+
+# HyperFrames cache
+.hyperframes-cache/
+
+# Editor outputs / artifacts
+edit/*.mp4
+edit/preview-frames/
+edit/captions_generated.html
+edit/cuts.json
+edit/ffmpeg_cut.cmd
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -43,21 +43,25 @@ cd claude-video-studio-starter
 # 2. Install Python dependencies
 pip install requests python-dotenv
 
-# 3. Copy memory templates into your Claude Code project folder
-#    See INSTALL.md for the exact path on your OS
+# 3. Open Claude Code in the folder
+claude
 
-# 4. Customize your brand
-#    Open memory-templates/brand_voice_palette.md and fill in every {{PLACEHOLDER}}
-
-# 5. Get an ElevenLabs API key (free tier works) and put it in .env:
-#    ELEVENLABS_API_KEY=sk_xxx
-
-# 6. Pre-synthesize the SFX library (one time):
-python helpers/synth_sfx.py --out templates/composition/assets/sfx/
-
-# 7. Drop your first raw video into a new project folder, then tell Claude:
-#    "edit this video"
+# 4. In Claude, just say:
+#    "set me up"
+#
+#    Claude reads CLAUDE.md, walks you through ~5 questions
+#    (accent color, handle, North Star, etc.), populates your
+#    brand memory, generates the SFX library, asks for your
+#    ElevenLabs API key, and confirms setup is complete.
+#
+# 5. Drop a vertical recording in the folder, then:
+#    "edit this video at my-vid.mp4"
+#
+#    Claude transcribes, cuts silences, builds captions, composes,
+#    and renders to edit/final.mp4.
 ```
+
+> 🎯 **You never edit any config file by hand.** Claude handles every file operation. The only manual steps are installing the 5 prerequisites listed in `INSTALL.md`.
 
 **[→ First video walkthrough, step-by-step](examples/first-video-walkthrough.md)**
 
@@ -68,6 +72,7 @@ python helpers/synth_sfx.py --out templates/composition/assets/sfx/
 ```
 claude-video-studio-starter/
 ├── README.md                     ← you are here
+├── CLAUDE.md                     ← Claude's auto-loaded agent instructions
 ├── INSTALL.md                    ← detailed prereq install (Mac + Windows)
 ├── LICENSE                       ← MIT
 ├── .gitignore
@@ -79,7 +84,8 @@ claude-video-studio-starter/
 │   ├── reference_vertical_safe_zones.md  ← Reels/TikTok safe-zone spec
 │   └── feedback_short_form_style.md      ← short-form aesthetic rules
 │
-├── helpers/                      ← Python helpers — argv-parameterized, copy into each project's edit/
+├── helpers/                      ← Python helpers — argv-parameterized
+│   ├── setup.py                  ← bootstrap orchestrator (Claude calls this automatically)
 │   ├── transcribe.py             ← extract audio → ElevenLabs Scribe → cached word-level JSON
 │   ├── cut_silences.py           ← detect gaps >0.2s, ffmpeg-cut, fade splices, denoise, clean audio
 │   ├── generate_captions.py      ← Scribe JSON → phrase-level HTML caption clips
